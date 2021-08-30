@@ -92,7 +92,7 @@ export default new Router({
     {
       path: '*',
       redirect: to => {
-        return '/modify'
+        return '/login'
       }
     }
   ]
