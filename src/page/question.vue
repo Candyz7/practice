@@ -7,6 +7,7 @@
         <van-list
           v-model="loading"
           :finished="finished"
+          :immediate-check="false"
           finished-text="没有更多了"
           @load="onLoad">
           <display-data :listData="listData"></display-data>
@@ -28,7 +29,8 @@ export default {
       finished: false,
       refreshing: false,
       page: 0,
-      pageSize: 15,
+      pageSize: 20,
+      searchValue: '',
       listData: [
         // {
         //   type: '单选',
@@ -64,7 +66,7 @@ export default {
     }
   },
   mounted () {
-    // this.findtltle('')
+    this.getListData()
     // el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子。
   },
   methods: {
@@ -79,12 +81,20 @@ export default {
       // 将 loading 设置为 true，表示处于加载状态
       this.loading = true
       this.page = 0
-      this.onLoad()
+      this.getListData()
     },
     onLoad () {
-      this.findtltle('')
+      console.log(9999)
+      this.page++
+      this.getListData()
     },
     async findtltle (value) {
+      this.searchValue = value
+      this.listData = []
+      this.page = 0
+      this.getListData()
+    },
+    async getListData () {
       let vm = this
       if (this.refreshing) {
         this.listData = []
@@ -92,9 +102,8 @@ export default {
       }
       let url = 'http://localhost:8080/practice/subject/list?page=' + vm.page + '&pageSize=' + vm.pageSize
       let param = {
-        title: value
+        title: vm.searchValue
       }
-      console.log(param)
       let res = await vm.$axiosHttp.postHttp(url, param)
       vm.listData = vm.listData.concat(res.list)
       // 加载状态结束
@@ -124,7 +133,7 @@ export default {
 .question-content{
     width: 100%;
   background-color: rgb(241, 241, 241);
-  height: calc(100vh - 104px);
+  height: calc(100vh - 105px);
   position: absolute;
   overflow: auto;
 }

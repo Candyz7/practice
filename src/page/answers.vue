@@ -4,7 +4,7 @@
     <div class="answers-content">
         <van-cell-group>
           <van-cell>
-            <span slot="title">{{listRandomData[currentIndex].subjectType === '1' ? '单选题' : '多选题'}}</span>
+            <span slot="title">{{this.listRandomData[currentIndex].subjectType === '1' ? '单选题' : '多选题'}}</span>
             <span slot="default">{{ currentIndex + 1}}/{{listRandomData.length}}</span>
           </van-cell>
         </van-cell-group>
@@ -96,7 +96,7 @@ export default {
       // console.log(this.listRandomData.length)
       // console.log(item.length)
       this.$dialog.alert({
-        message: '你的分数是' + 100 / this.listRandomData.length * item.length
+        message: '此次答题的分数是：' + 100 / this.listRandomData.length * item.length
       }).then(() => {
         this.$router.go(-1)
       })
