@@ -21,8 +21,8 @@
         <div class="answers-button">
           {{listRandomData[currentIndex].result}}
         </div>
-        <button v-show="listRandomData[currentIndex].result && currentIndex < listRandomData.length - 1" class="nextanswer" @click="next">下一题</button>
-        <button v-show="listRandomData[currentIndex].result && currentIndex === listRandomData.length - 1" class="nextanswer" @click="goFraction">查看答案分数</button>
+        <button v-show="listRandomData[currentIndex].result && currentIndex < listRandomData.length - 1" @click="next">下一题</button>
+        <button v-show="listRandomData[currentIndex].result && currentIndex === listRandomData.length - 1" @click="goFraction">查看答案分数</button>
     </div>
   </div>
 </template>
@@ -60,11 +60,11 @@ export default {
       let vm = this
       let url = 'http://localhost:8080/practice/subject/listRandom?number=' + 5
       let res = await vm.$axiosHttp.postHttp(url, {})
-      console.log(res)
+      // console.log(res)
       vm.listRandomData = res
     },
     judgeFn () {
-      console.log(this.listRandomData[this.currentIndex].radio)
+      // console.log(this.listRandomData[this.currentIndex].radio)
       var rightAnswerArr = this.listRandomData[this.currentIndex].answers.filter(function (opt) {
         return opt.rightAnswer === '1'
       })
@@ -90,8 +90,13 @@ export default {
       this.currentIndex++
     },
     goFraction () {
+      var item = this.listRandomData.filter(function (mesg) {
+        return mesg.result.indexOf('答案正确') !== -1
+      })
+      // console.log(this.listRandomData.length)
+      // console.log(item.length)
       this.$dialog.alert({
-        message: '你的分数是'
+        message: '你的分数是' + 100 / this.listRandomData.length * item.length
       }).then(() => {
         this.$router.go(-1)
       })
@@ -134,6 +139,7 @@ export default {
 }
 .answers /deep/ .van-checkbox{
     margin: 0px 15px 15px 15px;
+    text-align: left;
 }
 .answers /deep/ .van-checkbox-group{
     margin-left: 10px;
@@ -141,8 +147,5 @@ export default {
 .answers-button{
     display: flex;
     margin-left: 15px;
-}
-.nextanswer{
-  /* display: none; */
 }
 </style>

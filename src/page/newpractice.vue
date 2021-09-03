@@ -75,7 +75,9 @@ export default {
       this.$router.push({ path: '/lianxi3' })
     },
     findshulian () {
+      console.log(this.data.messages)
       var item = this.data.messages.filter(function (mesg) {
+        console.log(mesg)
         return mesg.degree.indexOf('熟练') !== -1
       })
       console.log(item)

@@ -195,9 +195,7 @@ export default {
       let url = 'http://localhost:8080/practice/user/ListUserByname?name=' + this.username + '&password=' + this.password
       let res = await vm.$axiosHttp.getHttp(url, {})
       if (res.length > 0) {
-        vm.$dialog.alert({
-          message: '登录成功'
-        })
+        vm.$toast('登录成功')
         vm.$router.push({ path: '/home', query: {name: vm.username, password: vm.password} })
       } else {
         vm.$dialog.alert({
