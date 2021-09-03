@@ -25,10 +25,10 @@
         <div class="newsubject-rightKey">正确答案是：</div>
         <div class="newsubject-option">
             <van-checkbox-group v-model="result" direction="horizontal" :max="nub" :disabled="why">
-                <van-checkbox name="A">A</van-checkbox>
-                <van-checkbox name="B">B</van-checkbox>
-                <van-checkbox name="C">C</van-checkbox>
-                <van-checkbox name="D">D</van-checkbox>
+                <van-checkbox name="1">A</van-checkbox>
+                <van-checkbox name="2">B</van-checkbox>
+                <van-checkbox name="3">C</van-checkbox>
+                <van-checkbox name="4">D</van-checkbox>
             </van-checkbox-group>
         </div>
     </div>
@@ -71,10 +71,21 @@ export default {
     // el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子。
   },
   methods: {
+    isRepeat (arr) {
+      var hash = {}
+      for (var i in arr) {
+        if (hash[arr[i]]) {
+          return true
+        }
+        hash[arr[i]] = true
+      }
+      return false
+    },
     upPage () {
       this.$router.go(-1)
     },
-    gohome () {
+    async gohome () {
+      let vm = this
       var radios = this.radio
       var values = this.value
       var playAs = this.playA
@@ -82,14 +93,85 @@ export default {
       var playCs = this.playC
       var playDs = this.playD
       var results = this.result
-
       if (!(radios && values && playAs && playBs && playCs && playDs && results)) {
         this.$dialog.alert({
           message: '您还未输入'
         })
-      } else {
-        this.$router.go(-1)
+        return
       }
+      let arr = []
+      arr.push(vm.playA, vm.playB, vm.playC, vm.playD)
+      console.log(this.isRepeat(arr)) // 判断数组是否有重复
+      let arr2 = [...new Set(arr)] // 数组去重
+      if (arr.length !== arr2.length) {
+        this.$dialog.alert({
+          message: '答案不能重复'
+        })
+        return
+      }
+      console.log(this.radio)
+      console.log(this.result)
+      if (this.radio === '2' && this.result.length < 2) { // 如果
+        this.$dialog.alert({
+          message: '答案不足两个'
+        })
+        return
+      }
+      let url = 'http://localhost:8080/practice/subject/insert'
+      let param = {
+        title: vm.value,
+        subjectType: vm.radio,
+        answers: [
+          {
+            seq: '1',
+            answerDesc: vm.playA,
+            rightAnswer: 0
+          },
+          {
+            seq: '2',
+            answerDesc: vm.playB,
+            rightAnswer: 0
+          },
+          {
+            seq: '3',
+            answerDesc: vm.playC,
+            rightAnswer: 0
+          },
+          {
+            seq: '4',
+            answerDesc: vm.playD,
+            rightAnswer: 0
+          }
+        ]
+      }
+      // console.log(this.result)
+      for (var i = 0; i < param.answers.length; i++) {
+        // console.log(param.answers[i].seq)
+        let index = this.result.findIndex((item) => {
+          return item === param.answers[i].seq
+        })
+        // console.log(777777, index)
+        if (index > -1) {
+          param.answers[i].rightAnswer = 1
+        }
+      }
+      // console.log(222, param)
+      let res = await vm.$axiosHttp.postHttp(url, param)
+      this.$dialog.alert({
+        message: res.message
+      })
+      this.Refresh()
+      // this.$router.go(-1)
+    },
+    Refresh () {
+      let vm = this
+      vm.radio = ''
+      vm.value = ''
+      vm.playA = ''
+      vm.playB = ''
+      vm.playC = ''
+      vm.playD = ''
+      vm.result = ''
     }
     // judgeFn () {
     //   this.result = []

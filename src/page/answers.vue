@@ -3,30 +3,26 @@
     <Header title="答题"></Header>
     <div class="answers-content">
         <van-cell-group>
-        <van-cell :title="titles" value="1/5" />
+          <van-cell>
+            <span slot="title">{{listRandomData[currentIndex].subjectType === '1' ? '单选题' : '多选题'}}</span>
+            <span slot="default">{{ currentIndex + 1}}/{{listRandomData.length}}</span>
+          </van-cell>
         </van-cell-group>
-        <div class="answers-title">{{content}}</div>
+        <div class="answers-title">{{listRandomData[currentIndex].title}}</div>
         <div class="answers-option">
-            <van-radio-group v-model="radio"  @change="judgeFn">
-              <van-radio :name='item.name' v-for="(item, index) in options"
+            <van-checkbox-group v-model="listRandomData[currentIndex].radio" :max="listRandomData[currentIndex].subjectType === '1' ? 1 : 4" @change="judgeFn">
+              <van-checkbox
+              v-for="(item, index) in listRandomData[currentIndex].answers"
               :key="index"
-              >{{item.option}}</van-radio>
-            </van-radio-group>
-        </div>
-        <div class="answers-button">
-          {{answers}}
-        </div>
-        <!-- <div class="answers-title">{{content}}</div>
-        <div class="answers-option">
-          <van-checkbox-group v-model="radio" @change="dddddd">
-            <van-checkbox :name='item.name' v-for="(item, index) in options"
-              :key="index"
-              >{{item.option}}</van-checkbox>
+               :name='item.seq'
+              >{{item.answerDesc}}</van-checkbox>
             </van-checkbox-group>
         </div>
         <div class="answers-button">
-          {{answers}}
-        </div> -->
+          {{listRandomData[currentIndex].result}}
+        </div>
+        <button v-show="listRandomData[currentIndex].result && currentIndex < listRandomData.length - 1" class="nextanswer" @click="next">下一题</button>
+        <button v-show="listRandomData[currentIndex].result && currentIndex === listRandomData.length - 1" class="nextanswer" @click="goFraction">查看答案分数</button>
     </div>
   </div>
 </template>
@@ -37,70 +33,69 @@ export default {
   components: { Header },
   data () {
     return {
-      radio: '',
-      answers: '',
-      titles: '单选题',
-      content: '驾驶机动车在道路上违反道路交通安全法的行为，属于什么行为？',
-      options: [
-        {name: '1', option: 'A. 违章行为', answer: false},
-        {name: '2', option: 'B. 违法行为', answer: true},
-        {name: '3', option: 'C. 过失行为', answer: false},
-        {name: '4', option: 'D. 违规行为', answer: false}
-      ]
-      // radio: [],
+      listRandomData: [],
+      currentIndex: 0
+      // data: '',
+      // radio: '',
       // answers: '',
-      // titles: '多选题',
+      // titles: '单选题',
       // content: '驾驶机动车在道路上违反道路交通安全法的行为，属于什么行为？',
       // options: [
       //   {name: '1', option: 'A. 违章行为', answer: false},
       //   {name: '2', option: 'B. 违法行为', answer: true},
       //   {name: '3', option: 'C. 过失行为', answer: false},
-      //   {name: '4', option: 'D. 违规行为', answer: true}
+      //   {name: '4', option: 'D. 违规行为', answer: false}
       // ]
     }
   },
   mounted () {
+    this.getListRandom()
     // el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子。
   },
   methods: {
     upPage () {
       this.$router.go(-1)
     },
+    async getListRandom () {
+      let vm = this
+      let url = 'http://localhost:8080/practice/subject/listRandom?number=' + 5
+      let res = await vm.$axiosHttp.postHttp(url, {})
+      console.log(res)
+      vm.listRandomData = res
+    },
     judgeFn () {
-      console.log(this.radio)
-      var item = this.options.find(function (opt) {
-        return opt.answer === true
+      console.log(this.listRandomData[this.currentIndex].radio)
+      var rightAnswerArr = this.listRandomData[this.currentIndex].answers.filter(function (opt) {
+        return opt.rightAnswer === '1'
       })
-      console.log(item)
-      if (this.radio === item.name) {
-        this.answers = '答案正确'
+      let arr = []
+      rightAnswerArr.map((item) => {
+        arr.push(item.seq)
+      })
+      console.log(arr)
+      let raidoVale = JSON.parse(JSON.stringify(this.listRandomData[this.currentIndex].radio))
+      if (raidoVale.sort().toString() === arr.sort().toString()) {
+        this.listRandomData[this.currentIndex].result = '答案正确'
       } else {
-        this.answers = '答案错误'
+        if (this.listRandomData[this.currentIndex].radio.length === 0) {
+          this.listRandomData[this.currentIndex].result = ''
+        } else {
+          this.listRandomData[this.currentIndex].result = '答案错误'
+        }
       }
+      console.log(33, this.listRandomData[this.currentIndex].result)
+      this.$forceUpdate()
+    },
+    next () {
+      this.currentIndex++
+    },
+    goFraction () {
+      this.$dialog.alert({
+        message: '你的分数是'
+      }).then(() => {
+        this.$router.go(-1)
+      })
     }
-    // dddddd () {
-    //   console.log(this.radio)
-    //   var item = this.options.filter(function (opt) {
-    //     return opt.answer === true
-    //   })
-    //   console.log(item)
-    //   var UserChooserightAnswer = 0
-    //   var rightAnswer = item.length
-    //   for (var i = 0; i < this.radio.length; i++) {
-    //     var key1 = this.radio[i]
-    //     for (var j = 0; j < item.length; j++) {
-    //       var key2 = item[j].name
-    //       if (key1 === key2) {
-    //         UserChooserightAnswer = UserChooserightAnswer + 1
-    //       }
-    //     }
-    //   }
-    //   if (rightAnswer === UserChooserightAnswer) {
-    //     this.answers = '答案正确'
-    //   } else {
-    //     this.answers = '答案错误'
-    //   }
-    // }
   }
 }
 </script>
@@ -137,14 +132,17 @@ export default {
 .answers-option{
     margin-top: 20px;
 }
-.answers /deep/ .van-radio{
+.answers /deep/ .van-checkbox{
     margin: 0px 15px 15px 15px;
 }
-.answers /deep/ .van-radio__label{
-    margin-left: 30px;
+.answers /deep/ .van-checkbox-group{
+    margin-left: 10px;
 }
 .answers-button{
     display: flex;
     margin-left: 15px;
+}
+.nextanswer{
+  /* display: none; */
 }
 </style>

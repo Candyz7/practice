@@ -51,7 +51,7 @@ export default {
     upPage () {
       this.$router.go(-1)
     },
-    submitRegiter () {
+    async submitRegiter () {
       let vm = this
       if (!(/^1(3|4|5|6|7|8|9)\d{9}$/.test(this.userphone))) {
         this.$dialog.alert({
@@ -64,27 +64,26 @@ export default {
         })
         return false
       } else {
-        this.$axios.post('http://localhost:8080/practice/user/insert', {
+        let url = 'http://localhost:8080/practice/user/insert'
+        let param = {
           name: this.username,
           password: this.password,
           phone: this.userphone
-        }).then(function (response) {
-          console.log(this)
-          if (response.status === 200) {
-            vm.$dialog.alert({
-              message: '注册成功'
-            })
+        }
+        let res = await vm.$axiosHttp.postHttp(url, param)
+        console.log(res)
+        if (res.success === '0') {
+          vm.$dialog.alert({
+            message: res.message
+          })
+        } else {
+          vm.$dialog.alert({
+            message: '注册成功'
+          }).then(() => {
             vm.$router.go(-1)
-          } else {
-            vm.$dialog.alert({
-              message: '注册失败'
-            })
-          }
-        }).catch(function (error) {
-          console.log(error)
-        })
+          })
+        }
       }
-      // console.log(values)
     }
   }
 }

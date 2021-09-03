@@ -2,7 +2,11 @@
   <div class="displayData">
     <div class="question-box">
       <div class="question-type" v-for="(item, index) in listData" :key="index" @click="godetails(item)">
-        <div :class="{'question-first': item.type==='单选', 'question-next': item.type==='多选'}">{{item.type}}</div>
+        <div :class="{'question-first': item.subjectType==='1', 'question-next': item.subjectType==='2'}">
+          {{item.subjectType === '1' ? '单选' : '多选'}}
+          <!-- <span v-if="item.subjectType === '1'">单选</span>
+          <span v-if="item.subjectType === '2'">多选</span> -->
+        </div>
         <div class="question-title">{{item.title}}</div>
       </div>
     </div>

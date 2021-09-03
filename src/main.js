@@ -4,7 +4,8 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
-import { Form, Field, Button, Icon, NavBar, Toast, Notify, Cell, CellGroup, RadioGroup, Radio, Checkbox, CheckboxGroup, Search, Dialog } from 'vant'
+import http from './common'
+import { Form, Field, Button, Icon, NavBar, Toast, Notify, Cell, CellGroup, RadioGroup, Radio, Checkbox, CheckboxGroup, Search, Dialog, List, PullRefresh } from 'vant'
 Vue.use(Form)
 Vue.use(Field)
 Vue.use(Button)
@@ -20,7 +21,10 @@ Vue.use(Checkbox)
 Vue.use(CheckboxGroup)
 Vue.use(Search)
 Vue.use(Dialog)
+Vue.use(List)
+Vue.use(PullRefresh)
 Vue.prototype.$axios = axios
+Vue.prototype.$axiosHttp = http
 
 export const eventHub = new Vue()
 

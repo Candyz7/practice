@@ -156,18 +156,18 @@ export default {
     //   return re
     // })
     // console.log(aaa);
-    var options = [
-      {name: '朱思凤', info: {age: 18, aihao: '羽毛球'}},
-      {name: '朱维', info: {age: 20, aihao: '蓝球'}},
-      {name: '朱思', info: {age: 27, aihao: '羽毛球'}},
-      {name: '朱思维', info: {age: 27, aihao: '羽毛球'}},
-      {name: '朱维', info: {age: 27, aihao: '羽毛球'}}
-    ]
-    var item = options.find(function (data) {
-      // console.log(data.name.indexOf('维') !== -1)
-      return data.info.aihao === '羽毛球' && data.info.age > 20 && data.name.indexOf('维') !== -1
-    })
-    console.log(item)
+    // var options = [
+    //   {name: '朱思凤', info: {age: 18, aihao: '羽毛球'}},
+    //   {name: '朱维', info: {age: 20, aihao: '蓝球'}},
+    //   {name: '朱思', info: {age: 27, aihao: '羽毛球'}},
+    //   {name: '朱思维', info: {age: 27, aihao: '羽毛球'}},
+    //   {name: '朱维', info: {age: 27, aihao: '羽毛球'}}
+    // ]
+    // var item = options.find(function (data) {
+    //   // console.log(data.name.indexOf('维') !== -1)
+    //   return data.info.aihao === '羽毛球' && data.info.age > 20 && data.name.indexOf('维') !== -1
+    // })
+    // console.log(item)
   },
   // beforeUpdate () {
   //   console.log('beforeUpdate')
@@ -190,25 +190,25 @@ export default {
     parentFn (payload) {
       this.message = payload
     },
-    onSubmit () {
-      // console.log('submit', this.username, this.password)
-      let url = 'http://localhost:8080/practice/user/ListUserByname?name=' + this.username + '&password=' + this.password
+    async onSubmit () {
       let vm = this
-      this.$axios.get(url, {
-      }).then(function (res) {
-        if (res.status === 200 && res.data.length > 0) {
-          vm.$dialog.alert({
-            message: '登录成功'
-          })
-          vm.$router.push({ path: '/home', query: {name: vm.username, password: vm.password} })
-        } else {
-          vm.$dialog.alert({
-            message: '登录失败'
-          })
-        }
-      }).catch(function (error) {
-        console.log(error)
-      })
+      let url = 'http://localhost:8080/practice/user/ListUserByname?name=' + this.username + '&password=' + this.password
+      let res = await vm.$axiosHttp.getHttp(url, {})
+      if (res.length > 0) {
+        vm.$dialog.alert({
+          message: '登录成功'
+        })
+        vm.$router.push({ path: '/home', query: {name: vm.username, password: vm.password} })
+      } else {
+        vm.$dialog.alert({
+          message: '用户不存在'
+        })
+      }
+      // this.$axios.get(url, {
+      // }).then(function (res) {
+      // }).catch(function (error) {
+      //   console.log(error)
+      // })
     },
     Register () {
       this.$router.push({ path: '/register' })

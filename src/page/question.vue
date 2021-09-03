@@ -1,9 +1,17 @@
 <template>
   <div class="question">
     <Header title="题库"></Header>
+    <Search @clickSearch="findtltle"></Search>
     <div class="question-content">
-      <Search @clickSearch="findtltle"></Search>
-      <display-data :listData="listData"></display-data>
+      <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+        <van-list
+          v-model="loading"
+          :finished="finished"
+          finished-text="没有更多了"
+          @load="onLoad">
+          <display-data :listData="listData"></display-data>
+        </van-list>
+      </van-pull-refresh>
     </div>
   </div>
 </template>
@@ -16,53 +24,85 @@ export default {
   components: { Header, Search, DisplayData },
   data () {
     return {
+      loading: false,
+      finished: false,
+      refreshing: false,
+      page: 0,
+      pageSize: 15,
       listData: [
-        {
-          type: '单选',
-          title: '驾驶机动车在道路上违反道路交通安全法的行为，属于什么行为？',
-          options: [
-            {id: 'A', option: '违章行为', answer: false},
-            {id: 'B', option: '违法行为', answer: true},
-            {id: 'C', option: '过失行为', answer: false},
-            {id: 'D', option: '违规行为', answer: false}
-          ]
-        },
-        {
-          type: '单选',
-          title: '驾驶机动车在道路上违反道路交通安全法的行为，属于什么行为？',
-          options: [
-            {id: 'A', option: '违章行为', answer: false},
-            {id: 'B', option: '违法行为', answer: true},
-            {id: 'C', option: '过失行为', answer: false},
-            {id: 'D', option: '违规行为', answer: false}
-          ]
-        },
-        {
-          type: '多选',
-          title: '第二个题目',
-          options: [
-            {id: 'A', option: '违章行为', answer: true},
-            {id: 'B', option: '违法行为', answer: false},
-            {id: 'C', option: '过失行为', answer: true},
-            {id: 'D', option: '违规行为', answer: false}
-          ]
-        }
+        // {
+        //   type: '单选',
+        //   title: '驾驶机动车在道路上违反道路交通安全法的行为，属于什么行为？',
+        //   options: [
+        //     {id: 'A', option: '违章行为', answer: false},
+        //     {id: 'B', option: '违法行为', answer: true},
+        //     {id: 'C', option: '过失行为', answer: false},
+        //     {id: 'D', option: '违规行为', answer: false}
+        //   ]
+        // },
+        // {
+        //   type: '单选',
+        //   title: '驾驶机动车在道路上违反道路交通安全法的行为，属于什么行为？',
+        //   options: [
+        //     {id: 'A', option: '违章行为', answer: false},
+        //     {id: 'B', option: '违法行为', answer: true},
+        //     {id: 'C', option: '过失行为', answer: false},
+        //     {id: 'D', option: '违规行为', answer: false}
+        //   ]
+        // },
+        // {
+        //   type: '多选',
+        //   title: '第二个题目',
+        //   options: [
+        //     {id: 'A', option: '违章行为', answer: true},
+        //     {id: 'B', option: '违法行为', answer: false},
+        //     {id: 'C', option: '过失行为', answer: true},
+        //     {id: 'D', option: '违规行为', answer: false}
+        //   ]
+        // }
       ]
     }
   },
   mounted () {
+    // this.findtltle('')
     // el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子。
   },
   methods: {
     upPage () {
       this.$router.go(-1)
     },
-    findtltle (value) {
-      // var _this = this
-      let item = this.listData.filter((data) => {
-        return data.title.indexOf(value) !== -1
-      })
-      this.listData = item
+    onRefresh () {
+      // 清空列表数据
+      this.listData = []
+      this.finished = false
+      // 重新加载数据
+      // 将 loading 设置为 true，表示处于加载状态
+      this.loading = true
+      this.page = 0
+      this.onLoad()
+    },
+    onLoad () {
+      this.findtltle('')
+    },
+    async findtltle (value) {
+      let vm = this
+      if (this.refreshing) {
+        this.listData = []
+        this.refreshing = false
+      }
+      let url = 'http://localhost:8080/practice/subject/list?page=' + vm.page + '&pageSize=' + vm.pageSize
+      let param = {
+        title: value
+      }
+      console.log(param)
+      let res = await vm.$axiosHttp.postHttp(url, param)
+      vm.listData = vm.listData.concat(res.list)
+      // 加载状态结束
+      this.loading = false
+      // 数据全部加载完成
+      if (vm.listData.length >= res.total) {
+        this.finished = true
+      }
     }
   }
 }
@@ -84,7 +124,7 @@ export default {
 .question-content{
     width: 100%;
   background-color: rgb(241, 241, 241);
-  height: calc(100vh - 50px);
+  height: calc(100vh - 104px);
   position: absolute;
   overflow: auto;
 }

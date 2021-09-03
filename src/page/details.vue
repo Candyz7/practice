@@ -4,7 +4,8 @@
     <div class="details-content">
         <div class="details-play">
             <div class="details-title">
-                <span :class="{'question-first': data.type==='单选', 'question-next': data.type==='多选'}">{{data.type}}</span>
+                <span :class="{'question-first': data.subjectType==='1', 'question-next': data.subjectType==='2'}">
+                {{data.subjectType === '1' ? '单选' : '多选'}}</span>
                 {{data.title}}
             </div>
         </div>
@@ -114,7 +115,7 @@ export default {
     background-color: rgb(25, 137, 250);
     border: 1px solid rgb(183, 183, 183);
     border-radius: 10%;
-    margin: 0px 10px 0px 10px;
+    padding: 2px 5px;
 }
 .question-next{
     width: 40px;
@@ -124,6 +125,6 @@ export default {
     background-color: rgb(250, 228, 27);
     border: 1px solid rgb(183, 183, 183);
     border-radius: 10%;
-    margin: 0px 10px 0px 10px;
+    padding: 2px 5px;
 }
 </style>

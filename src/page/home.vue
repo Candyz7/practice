@@ -4,7 +4,6 @@
     <div class="home-title">
       <Header title="模拟题库">
         <div slot="left" style="font-size: 12px">欢迎：{{name}}</div>
-        <!-- <div slot="center" style="font-size: 16px">模拟题库</div> -->
       </Header>
     </div>
     <div class="home-content">
@@ -71,23 +70,6 @@ export default {
   components: { Header, Footer },
   data () {
     return {
-      // homeMy: '我的',
-      // testHtml: '<span style="color: skyblue">有意思</span>',
-      // classValue: 'test',
-      // isTest: true,
-      // code: '01',
-      // role: '玩家',
-      // isShow: true,
-      // arr: [
-      //   {
-      //     name: '张三',
-      //     age: '18'
-      //   },
-      //   {
-      //     name: '李四',
-      //     age: '15'
-      //   }
-      // ]
       name: '',
       password: ''
     }
@@ -202,18 +184,6 @@ export default {
     gopractice () {
       this.$router.push({ path: '/practice' })
     }
-    // updateStyle () {
-    //   this.classValue = 'test-after'
-    // },
-    // updateStyle2 () {
-    //   this.isTest = false
-    // },
-    // tiaozhuan (index) {
-    //   console.log(index)
-    //   if (index === 1) {
-    //     this.$router.push({ path: '/login' })
-    //   }
-    // }
   }
 }
 </script>

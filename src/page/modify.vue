@@ -15,7 +15,7 @@
     />
         <van-field
         v-model="newpassword"
-        type="number"
+        type="password"
         name="新密码"
         label="新密码"
         placeholder="新密码"
@@ -46,42 +46,73 @@ export default {
     upPage () {
       this.$router.go(-1)
     },
-    modifyPassword () {
+    async modifyPassword () {
+      const vm = this
       let url = 'http://localhost:8080/practice/user/ListUserByname?name=' + this.name + '&password=' + this.password
+      let res = await vm.$axiosHttp.getHttp(url, {})
+      if (res[0].password === vm.password) {
+        vm.updata(res)
+      } else {
+        vm.$dialog.alert({
+          message: '您输入的密码与原密码不符'
+        })
+      }
+      // this.$axios.get(url, {
+      // }).then(function (res) {
+      //   if (res.status === 200) {
+      //     if (res.data[0].password === vm.password) {
+      //       vm.updata(res)
+      //     } else {
+      //       vm.$dialog.alert({
+      //         message: '您输入的密码与原密码不符'
+      //       })
+      //     }
+      //   } else {
+      //     vm.$dialog.alert({
+      //       message: '接口异常'
+      //     })
+      //   }
+      // }).catch(function (error) {
+      //   console.log(error)
+      // })
+    },
+    async updata (res) {
       let vm = this
-      this.$axios.get(url, {
-      }).then(function (res) {
-        // console.log(res)
-        // console.log(res.data)
-        // console.log(res.data[0].password)
-        // console.log(vm.password)
-        if (res.status === 200 && res.data[0].password === vm.password) {
-          vm.$axios.post('http://localhost:8080/practice/user/update', {
-            id: res.data[0].id,
-            name: res.data[0].name,
-            password: vm.newpassword,
-            phone: res.data[0].phone
-          }).then(function (response) {
-            if (response.status === 200 && response.data.message === '修改成功') {
-              vm.$dialog.alert({
-                message: '修改成功'
-              })
-            } else {
-              vm.$dialog.alert({
-                message: '修改失败'
-              })
-            }
-          }).catch(function (error) {
-            console.log(error)
+      let url = 'http://localhost:8080/practice/user/update'
+      let param = {
+        id: res[0].id,
+        name: res[0].name,
+        password: vm.newpassword,
+        phone: res[0].phone
+      }
+      // await方式
+      try {
+        let responseData = await vm.$axiosHttp.postHttp(url, param)
+        if (responseData && responseData.message === '修改成功') {
+          vm.$dialog.alert({
+            message: '修改成功'
           })
         } else {
           vm.$dialog.alert({
-            message: '您输入的密码与原密码不符'
+            message: '修改失败'
           })
         }
-      }).catch(function (error) {
+      } catch (error) {
         console.log(error)
-      })
+      }
+      // promise方式
+      // vm.$axiosHttp.postHttp(url, param).then((responseData) => {
+      //   if (responseData.message === '修改成功') {
+      //     vm.$dialog.alert({
+      //       message: '修改成功'
+      //     })
+      //   } else {
+      //     vm.$dialog.alert({
+      //       message: '修改失败'
+      //     })
+      //   }
+      // }).catch(() => {
+      // })
     }
   }
 }
