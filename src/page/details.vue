@@ -4,16 +4,21 @@
     <div class="details-content">
         <div class="details-play">
             <div class="details-title">
-                <span :class="{'question-first': data.subjectType==='1', 'question-next': data.subjectType==='2'}">
-                {{data.subjectType === '1' ? '单选' : '多选'}}</span>
-                {{data.title}}
+                <span :class="{'question-first': listData.data.subjectType==='1', 'question-next': listData.data.subjectType==='2'}">
+                {{listData.data.subjectType === '1' ? '单选' : '多选'}}</span>
+                {{listData.data.title}}
             </div>
         </div>
         <div class="details-option">
             <div
-             v-for="(item, index) in data.options"
+             v-for="(item, index) in listData.data.answers"
              :key="index"
-             :class="{'playb': item.answer, 'play': !item.answer}">{{item.id}}. {{item.option}}</div>
+             :class="{'playb': item.rightAnswer === '1', 'play': item.rightAnswer === '0'}">
+             <span v-if="item.seq === '1'">A</span>
+             <span v-if="item.seq === '2'">B</span>
+             <span v-if="item.seq === '3'">C</span>
+             <span v-if="item.seq === '4'">D</span>
+             . {{item.answerDesc}}</div>
         </div>
         <div class="details-true">正确答案：<span>{{ answer}}</span></div>
     </div>
@@ -27,27 +32,47 @@ export default {
   data () {
     return {
       data: '',
-      answer: ''
+      answer: '',
+      listData: ''
     }
   },
   mounted () {
     this.data = this.$route.query.data
     console.log(this.data)
-    // var item = this.data.options.find(function (data) {
-    //   return data.answer === true
-    // })
-    var item = this.data.options.filter(function (data) {
-      return data.answer === true
-    })
-    // console.log(999, item)
-    for (var i = 0; i < item.length; i++) {
-      this.answer = this.answer + item[i].id
-    }
+    this.getlistData()
     // el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子。
   },
   methods: {
     upPage () {
       this.$router.go(-1)
+    },
+    async getlistData () {
+      let vm = this
+      let url = 'http://localhost:8080/practice/subject/detail?subjectId=' + this.data
+      let param = {
+        title: ''
+      }
+      let res = await vm.$axiosHttp.postHttp(url, param)
+      this.listData = res
+      console.log(res)
+      var item = this.listData.data.answers.filter(function (data) {
+        return data.rightAnswer === '1'
+      })
+      console.log(999, item)
+      let rightseq = ''
+      for (var i = 0; i < item.length; i++) {
+        if (item[i].seq === '1') {
+          rightseq = 'A'
+        } else if (item[i].seq === '2') {
+          rightseq = 'B'
+        } else if (item[i].seq === '3') {
+          rightseq = 'C'
+        } else if (item[i].seq === '4') {
+          rightseq = 'D'
+        }
+        console.log(rightseq)
+        this.answer = this.answer + rightseq
+      }
     }
   }
 }

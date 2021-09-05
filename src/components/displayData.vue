@@ -24,7 +24,8 @@ export default {
   },
   methods: {
     godetails (item) {
-      this.$router.push({ path: '/details', query: { data: item } })
+      console.log(item)
+      this.$router.push({ path: '/details', query: { data: item.subjectId } })
     }
   }
 }

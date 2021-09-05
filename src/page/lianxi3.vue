@@ -57,6 +57,9 @@ export default {
     var mid = [3, 4]
     var newarray = [1, 2, ...mid, 5, 6]
     console.log(newarray)
+    for (var i = 1; i <= 100; i++) {
+      console.log('你好吗')
+    }
   },
   methods: {
     upPage () {
