@@ -16,6 +16,11 @@
 export default {
   name: 'displayData',
   props: ['listData'],
+  // props: {
+  //   listData: {
+  //     type: Array,
+  //   }
+  // },
   data () {
     return {
     }

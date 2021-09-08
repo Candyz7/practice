@@ -54,6 +54,16 @@ export default {
     }
   },
   mounted () {
+    var str = '我在玛丽边捡到一分钱，用掉了这一分钱'
+    console.log(str.indexOf('分', 3))
+    console.log(str.substr(2, 2))
+    var date = new Date()
+    var year = date.getFullYear()
+    var month = date.getMonth() + 1
+    var dates = date.getDate()
+    var arr = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+    var day = date.getDay()
+    console.log('今天是: ' + year + '年' + month + '月' + dates + '日 ' + arr[day])
     var mid = [3, 4]
     var newarray = [1, 2, ...mid, 5, 6]
     console.log(newarray)

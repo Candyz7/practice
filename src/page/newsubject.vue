@@ -32,7 +32,7 @@
             </van-checkbox-group>
         </div>
     </div>
-    <van-button color="rgb(25, 137, 250)" type="primary" size="large" @click="gohome">提交</van-button>
+    <van-button color="rgb(25, 137, 250)" type="primary" size="large" :disabled="isSubmit" @click="gohome">提交</van-button>
   </div>
 </template>
 <script>
@@ -67,6 +67,11 @@ export default {
       this.result = []
     }
   },
+  computed: {
+    isSubmit () {
+      return !(this.radio && this.value && this.playA && this.playB && this.playC && this.playD && this.result.length > 0)
+    }
+  },
   mounted () {
     // el 被新创建的 vm.$el 替换，并挂载到实例上去之后调用该钩子。
   },
@@ -86,19 +91,12 @@ export default {
     },
     async gohome () {
       let vm = this
-      var radios = this.radio
-      var values = this.value
-      var playAs = this.playA
-      var playBs = this.playB
-      var playCs = this.playC
-      var playDs = this.playD
-      var results = this.result
-      if (!(radios && values && playAs && playBs && playCs && playDs && results)) {
-        this.$dialog.alert({
-          message: '您还未输入'
-        })
-        return
-      }
+      // if (!(this.radio && this.value && this.playA && this.playB && this.playC && this.playD && this.result.length > 0)) {
+      //   this.$dialog.alert({
+      //     message: '您还未输入'
+      //   })
+      //   return
+      // }
       let arr = []
       arr.push(vm.playA, vm.playB, vm.playC, vm.playD)
       console.log(this.isRepeat(arr)) // 判断数组是否有重复
